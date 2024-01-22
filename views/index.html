@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        flex: 1;
+      }
+
+      footer {
+        background-color: #f8f9fa;
+        padding: 20px 0;
+        text-align: center;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="../static/styles.css" />
+    <title>Weather Application</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="mb-4">Weather Application</h1>
+      <form action="/weather" method="post">
+        <div class="form-group">
+          <label for="city">Enter city:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="city"
+            name="city"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+    <footer class="mt-5">
+      <p>Grents Artem | SE-2205</p>
+    </footer>
+  </body>
+</html>
