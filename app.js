@@ -20,7 +20,6 @@ app.post("/weather", async (req, res) => {
   try {
     const cityName = req.body.city;
 
-    // Запрос к OpenWeatherMap API
     const weatherApiKey = "ace1ffcc9ac4cab7456a6d14fdc483e7";
     const weatherApiUrl = `http://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${weatherApiKey}`;
     const weatherResponse = await fetch(weatherApiUrl);
@@ -29,25 +28,38 @@ app.post("/weather", async (req, res) => {
     console.log("Requested weather for:", cityName);
     console.log("Weather data:", weatherData);
     const apiKey = "bG/ihNFebjjUh5fQeZseCw==OFnRunQwztiKgww2";
-    const apiNinjasUrl = "https://api.api-ninjas.com/v1/city?name=";
-    // Запрос к API Ninjas
-    const apiNinjasResponse = await fetch(`${apiNinjasUrl}${cityName}`, {
-      headers: {
-        "X-Api-Key": apiKey,
-      },
-    });
-    const apiNinjasData = await apiNinjasResponse.json();
+    const apiNinjasUrl = "https://api.api-ninjas.com/v1/";
 
-    console.log("API Ninjas data:", apiNinjasData);
+    const cityInfoResponse = await fetch(
+      `${apiNinjasUrl}city?name=${cityName}`,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+        },
+      }
+    );
+    const cityInfoData = await cityInfoResponse.json();
 
-    // Извлекаем необходимые данные из API Ninjas
+    console.log("API Ninjas city info:", cityInfoData);
+
+    const airportsResponse = await fetch(
+      `${apiNinjasUrl}airports?city=${cityName}`,
+      {
+        headers: {
+          "X-Api-Key": apiKey,
+        },
+      }
+    );
+    const airportsData = await airportsResponse.json();
+
+    console.log("API Ninjas airports info:", airportsData);
+
     const cityInfo =
-      apiNinjasData.map((city) => ({
+      cityInfoData.map((city) => ({
         isCapital: city.is_capital,
         population: city.population,
       }))[0] || {};
 
-    // Генерируем HTML с вставленными данными и картой
     const htmlContent = `
           <!DOCTYPE html>
           <html lang="en">
@@ -114,6 +126,18 @@ app.post("/weather", async (req, res) => {
                             ? `<p>Population: ${cityInfo.population}</p>`
                             : "<p>No city information available</p>"
                         }
+                        ${
+                          airportsData.length > 0
+                            ? `
+                              <h3 class="mt-4">Airports in ${cityName}</h3>
+                              <ul>
+                                ${airportsData
+                                  .map((airport) => `<li>${airport.name}</li>`)
+                                  .join("")}
+                              </ul>
+                            `
+                            : "<p>No airport information available</p>"
+                        }
                         <div style="height: 300px; width: 100%;">
                           <iframe
                             width="100%"
@@ -141,13 +165,13 @@ app.post("/weather", async (req, res) => {
           </html>
         `;
 
-    // Отправляем сгенерированный HTML
     res.send(htmlContent);
   } catch (error) {
     console.error("Error fetching weather data:", error);
     res.send("<p>Error fetching weather data</p>");
   }
 });
+
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
